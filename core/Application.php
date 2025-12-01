@@ -28,7 +28,12 @@ class Application
     private function getDay(int $day): Day
     {
         $dayClass = $this->getDayClass($day);
-        return new $dayClass();
+        $instance = Autowire::start($dayClass);
+        if ($instance instanceof Day) {
+            return $instance;
+        } else {
+            throw new InvalidArgumentException("Invalid day specified!");
+        }
     }
 
     private function getPuzzleMethod(int $puzzle): string
@@ -36,20 +41,37 @@ class Application
         return 'puzzle_' . $puzzle;
     }
 
-    private function runPuzzle(Day $day, int $puzzle): void
+    private function getInput(Day $day, int $puzzle): array
     {
-        $puzzle = $this->getPuzzleMethod($puzzle);
-        if (method_exists($day, $puzzle)) {
-            $day->$puzzle();
+        $input = file_get_contents(__DIR__ . "/../input/day_{$day->getDay()}.txt");
+        $inputParser = new InputParser($input);
+        $day->handleInput($inputParser, $puzzle);
+        return $inputParser->getOutput();
+    }
+
+    private function runPuzzle(Day $day, int $puzzle): string
+    {
+        $puzzleMethod = $this->getPuzzleMethod($puzzle);
+
+        if (method_exists($day, $puzzleMethod)) {
+            $input = $this->getInput($day, $puzzle);
+            return $day->$puzzleMethod($input);
+
         } else {
             throw new InvalidArgumentException("Invalid puzzle specified!");
         }
+    }
+
+    private function displayOutput(string $output): void
+    {
+        echo "Result: ". $output . PHP_EOL;
     }
 
     public function run(): void
     {
         [$day, $puzzle] = $this->getArguments();
         $day = $this->getDay($day);
-        $this->runPuzzle($day, $puzzle);
+        $output = $this->runPuzzle($day, $puzzle);
+        $this->displayOutput($output);
     }
 }
