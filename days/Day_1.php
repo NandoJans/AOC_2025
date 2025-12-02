@@ -49,27 +49,22 @@ class Day_1 extends Day
         $value = 50;
         $zeroCount = 0;
         foreach ($input as $line) {
-            echo PHP_EOL;
-            echo "Line: $line" . PHP_EOL;
-            echo "Value: $value" . PHP_EOL;
-            $newValue = $value + $this->getValueDirection($line);
-            echo "New Value: $newValue" . PHP_EOL;
-            // 138 / 100 = 1
-            if ($newValue > 99 || $newValue < 0) {
-                echo "Zero's count: " . abs(floor($newValue / 100)) . PHP_EOL;
-                $zeroCount += abs(floor($newValue / 100));
-                if ($newValue < 0 && $value === 0) {
-                    echo "Zero's count: -1" . PHP_EOL;
-                    $zeroCount--;
+            // Brute force solution, faster solution should be possible
+            if (str_starts_with($line, 'R')) {
+                for ($i = 0; $i < $this->getValueDirection($line); $i++) {
+                    $value = $this->correctNumber($value + 1);
+                    if ($value === 0) {
+                        $zeroCount++;
+                    }
                 }
-            } elseif ($newValue === 0) {
-                echo "Zero's count: 1" . PHP_EOL;
-                $zeroCount++;
+            } else {
+                for ($i = 0; $i > $this->getValueDirection($line); $i--) {
+                    $value = $this->correctNumber($value - 1);
+                    if ($value === 0) {
+                        $zeroCount++;
+                    }
+                }
             }
-            $value = $this->correctNumber($newValue);
-            echo "Corrected Value: $value" . PHP_EOL;
-            echo "Zero Count: $zeroCount" . PHP_EOL;
-            echo PHP_EOL;
         }
         return $zeroCount;
     }
