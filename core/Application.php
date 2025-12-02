@@ -6,6 +6,8 @@ use InvalidArgumentException;
 
 class Application
 {
+    private int $runTime = 0;
+
     private function getArguments(): array
     {
         global $argv;
@@ -55,8 +57,10 @@ class Application
 
         if (method_exists($day, $puzzleMethod)) {
             $input = $this->getInput($day, $puzzle);
-            return $day->$puzzleMethod($input);
-
+            $start = microtime(true) * 1000;
+            $result = $day->$puzzleMethod($input);
+            $this->runTime = microtime(true) * 1000 - $start;
+            return $result;
         } else {
             throw new InvalidArgumentException("Invalid puzzle specified!");
         }
@@ -64,7 +68,21 @@ class Application
 
     private function displayOutput(string $output): void
     {
-        echo "Result: ". $output . PHP_EOL;
+        echo "\033[32m✅ ". $output . PHP_EOL;
+        echo "\033[94m⏱️ ". $this->getTimeString() . PHP_EOL . "\033[97m";
+    }
+
+    private function getTimeString(): string
+    {
+        $time = $this->runTime;
+        $hh = str_pad((string)floor($time / 3600000), 2, '0', STR_PAD_LEFT);
+        $time -= (int)$hh * 3600000;
+        $mm = str_pad((string)floor($time / 60000), 2, '0', STR_PAD_LEFT);
+        $time -= (int)$mm * 60000;
+        $ss = str_pad((string)floor($time / 1000), 2, '0', STR_PAD_LEFT);
+        $time -= (int)$ss * 1000;
+        $ms = str_pad((string)floor($time), 3, '0', STR_PAD_LEFT);
+        return "$hh:$mm:$ss.$ms";
     }
 
     public function run(): void
