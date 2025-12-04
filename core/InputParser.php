@@ -32,8 +32,19 @@ class InputParser
         }
     }
 
+    private function cleanOutput(array $output): array
+    {
+        return array_map(function ($item) {
+            if (is_array($item)) {
+                return $this->cleanOutput($item);
+            } else {
+                return str_replace(["\n", "\r"], '', $item);
+            }
+        }, $output);
+    }
+
     public function getOutput(): array
     {
-        return $this->output;
+        return $this->cleanOutput($this->output);
     }
 }

@@ -8,6 +8,10 @@ class Application
 {
     private int $runTime = 0;
 
+    public function __construct(
+        private Display $display
+    ) {}
+
     private function getArguments(): array
     {
         global $argv;
@@ -66,12 +70,6 @@ class Application
         }
     }
 
-    private function displayOutput(string $output): void
-    {
-        echo "\033[32m✅ ". $output . PHP_EOL;
-        echo "\033[94m⏱️ ". $this->getTimeString() . PHP_EOL . "\033[97m";
-    }
-
     private function getTimeString(): string
     {
         $time = $this->runTime;
@@ -81,7 +79,7 @@ class Application
         $time -= (int)$mm * 60000;
         $ss = str_pad((string)floor($time / 1000), 2, '0', STR_PAD_LEFT);
         $time -= (int)$ss * 1000;
-        $ms = str_pad((string)floor($time), 3, '0', STR_PAD_LEFT);
+        $ms = str_pad((string)floor($time), 4, '0', STR_PAD_LEFT);
         return "$hh:$mm:$ss.$ms";
     }
 
@@ -89,7 +87,14 @@ class Application
     {
         [$day, $puzzle] = $this->getArguments();
         $day = $this->getDay($day);
-        $output = $this->runPuzzle($day, $puzzle);
-        $this->displayOutput($output);
+
+        $this->display->displayTitle("Day {$day->getDay()} - Puzzle {$puzzle}");
+        $this->display->emptyLine(2);
+
+        $result = $this->runPuzzle($day, $puzzle);
+
+        $this->display->line("Results: ");
+        $this->display->line(" - ".Display::TEXT_COLOR_GREEN.Display::ICON_CHECK." $result");
+        $this->display->line(" - ".Display::TEXT_COLOR_BLUE.Display::ICON_STOPWATCH. " {$this->getTimeString()}");
     }
 }
