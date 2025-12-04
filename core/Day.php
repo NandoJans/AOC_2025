@@ -11,6 +11,6 @@ abstract class Day
 
     public function handleInput(InputParser $inputParser, int $puzzle): void
     {
-        $inputParser->explodeLines();
+        $inputParser->explode();
     }
 }

@@ -10,7 +10,7 @@ class InputParser
         private readonly string $input
     ) {}
 
-    public function explodeLines(): void
+    public function explode(): void
     {
         $this->output = explode("\n", $this->input);
     }
@@ -23,6 +23,11 @@ class InputParser
     public function explodeLinesWith(string $string): void
     {
         $this->iterate(fn($line) => explode($string, $line));
+    }
+
+    public function splitLines(): void
+    {
+        $this->iterate(fn($line) => str_split($line));
     }
 
     public function iterate(callable $callback): void
