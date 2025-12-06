@@ -25,6 +25,11 @@ class InputParser
         $this->iterate(fn($line) => explode($string, $line));
     }
 
+    public function customHandler(callable $function): void
+    {
+        $this->output = $function($this->output, $this->input);
+    }
+
     public function splitLines(): void
     {
         $this->iterate(fn($line) => str_split($line));
@@ -39,13 +44,15 @@ class InputParser
 
     private function cleanOutput(array $output): array
     {
-        return array_map(function ($item) {
+        return array_merge(array_filter(array_map(function ($item) {
             if (is_array($item)) {
                 return $this->cleanOutput($item);
             } else {
                 return str_replace(["\n", "\r"], '', $item);
             }
-        }, $output);
+        }, $output), function ($item) {
+            return $item !== '';
+        }));
     }
 
     public function getOutput(): array
