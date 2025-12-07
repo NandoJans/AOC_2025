@@ -124,7 +124,6 @@ class Day_6 extends Day
 
     public function puzzle_2(array $input): string
     {
-        var_dump($input);
         return $this->puzzle_1($input);
     }
 }
