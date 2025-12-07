@@ -4,7 +4,7 @@ namespace core;
 
 class InputParser
 {
-    private array $output;
+    private array $output = [];
 
     public function __construct(
         private readonly string $input
@@ -40,6 +40,25 @@ class InputParser
         foreach ($this->output as $index => $line) {
             $this->output[$index] = $callback($line);
         }
+    }
+
+    public function rotate(): void
+    {
+        $rotated = [];
+        $length = sizeof($this->output[0]);
+        for ($i = 0; $i < $length; $i++) {
+            $rotatedI = [];
+            foreach ($this->output as $item) {
+                $rotatedI[] = $item[$i];
+            }
+            $rotated[$i] = $rotatedI;
+        }
+        $this->output = $rotated;
+    }
+
+    public function clean(): void
+    {
+        $this->output = $this->cleanOutput($this->output);
     }
 
     private function cleanOutput(array $output): array

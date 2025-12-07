@@ -4,7 +4,6 @@ namespace days;
 
 use core\Day;
 use core\InputParser;
-use Couchbase\ValueRecorder;
 
 class Day_5 extends Day
 {
