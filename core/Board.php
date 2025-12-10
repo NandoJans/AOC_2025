@@ -4,6 +4,11 @@ namespace core;
 
 class Board
 {
+    public const string TOP_RIGHT = 'top-right';
+    public const string TOP_LEFT = 'top-left';
+    public const string BOTTOM_RIGHT = 'bottom-right';
+    public const string BOTTOM_LEFT = 'bottom-left';
+
     public function __construct(
         private array $board
     )
@@ -55,6 +60,50 @@ class Board
     public static function encodeLocationArr(array $ij): string
     {
         return static::encodeLocation($ij[0], $ij[1]);
+    }
+
+    public static function getDelta(int $i, int $j, int $offset = 0): int
+    {
+        return abs($i - $j) + $offset;
+    }
+
+    public static function getArea(int $i1, int $j1, int $i2, int $j2, int $deltaOffset = 0): int
+    {
+        return static::getDelta($i1, $i2, $deltaOffset) * static::getDelta($j1, $j2, $deltaOffset);
+    }
+
+    public static function determineCorner(array $corner1, array $corner2, array $corner3): ?string
+    {
+        $topBottom = '';
+        if (
+            $corner1[0] === $corner2[0] && $corner1[0] > $corner3[0] ||
+            $corner1[0] === $corner3[0] && $corner1[0] > $corner2[0]
+        ) {
+            $topBottom = 'bottom';
+        } elseif (
+            $corner1[0] === $corner2[0] && $corner1[0] < $corner3[0] ||
+            $corner1[0] === $corner3[0] && $corner1[0] < $corner2[0]
+        ) {
+            $topBottom = 'top';
+        }
+
+        if (!$topBottom) return null;
+
+        $rightLeft = '';
+        if (
+            $corner1[1] === $corner2[1] && $corner1[1] > $corner3[1] ||
+            $corner1[1] === $corner3[1] && $corner1[1] > $corner2[1]
+        ) {
+            $rightLeft = 'right';
+        } elseif (
+            $corner1[1] === $corner2[1] && $corner1[1] < $corner3[1] ||
+            $corner1[1] === $corner3[1] && $corner1[1] < $corner2[1]
+        ) {
+            $rightLeft = 'left';
+        }
+
+        if (!$rightLeft) return null;
+        return "$topBottom-$rightLeft";
     }
 
     public function __toString(): string

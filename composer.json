@@ -2,7 +2,8 @@
   "autoload": {
     "psr-4": {
       "core\\": "core/",
-      "days\\": "days/"
+      "days\\": "days/",
+      "classes\\": "classes/"
     }
   }
 }
